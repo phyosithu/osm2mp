@@ -111,9 +111,7 @@ polygon: |
   Data[% data.level_l || 0 %]=([% latlons.join('),(') %])
   [% END -%]
   [% INCLUDE _common_fields data = data -%]
-  [% FOREACH e IN data.entrance -%]
-  EntryPoint=([% e.0.1 %],[% e.0.0 %]),[% e.1 %]
-  [% END -%]
+  [% # TODO: entrances -%]
   [END]
   [% %]
 
