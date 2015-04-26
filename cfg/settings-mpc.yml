@@ -1,0 +1,115 @@
+################################
+##  Name selection priority
+################################
+
+
+--- taglist
+---
+
+label:          [ name, loc_name, operator, description ]
+entrance:       [ name, ref ]
+place:          [ place_name, name ]
+destination:    [ destination, label, name ]
+house:          [ 'addr:housename', 'addr:housenumber' ]
+
+phone:          [ 'contact:phone', phone ]
+
+
+
+################################
+##  Field presets
+################################
+
+--- presets
+---
+contacts:
+  PHONE: %phone
+
+building:
+  NAME: %house
+  HGT_DP_FMT: M
+  HGT_DP: !!perl/code |-
+    {
+      my $tags = shift()->{tag};
+      return int(extract_number($tags->{'height'}))  if $tags->{'height'};
+      return int(extract_number($tags->{'building:height'}))  if $tags->{'building:height'};
+      return int(extract_number($tags->{'building:levels'})*3)  if $tags->{'building:levels'};
+      return 2; # default
+    }
+
+road:
+  CNTRL_ACC:
+    selector: if
+    condition:
+      or:
+          - highway = motorway
+          - motorroad = yes|1|true
+    then: 1
+
+  IS_TUNNEL:
+    selector: if
+    condition: tunnel = yes|1|true
+    then: 1
+
+  IS_LGL_SPD: 1
+  SPD_LIMIT:
+    selector: if
+    condition: maxspeed = \d.*
+    then: %maxspeed
+    else:
+      selector: if
+      condition: highway = motorway
+      then: 110
+      else:
+        selector: if
+        condition:
+          or:
+              - highway = living_street
+              - liveng_street = yes|true|1
+        then: 20
+        else:
+          selector: if
+          condition: inside_city
+          then: 60
+          else: 90
+
+
+
+################################
+##  Tags to skip
+################################
+
+
+--- skip_tags
+---
+
+created_by:         1
+
+
+
+################################
+##  Tags for comment
+################################
+
+
+--- comment
+---
+
+
+
+################################
+##  Common types
+################################
+
+
+--- types
+---
+
+background:
+    type:       DATA_BOUNDS
+
+sea:
+    type:       SEA
+  
+
+
